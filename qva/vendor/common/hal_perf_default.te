@@ -31,6 +31,10 @@ hal_server_domain_bypass(vendor_hal_perf_default, vendor_hal_perf)
 type vendor_hal_perf_default_exec, exec_type, vendor_file_type, file_type;
 init_daemon_domain(vendor_hal_perf_default)
 
+#Allow AIDL base perf-hal communication
+hal_attribute_service(vendor_hal_perf, vendor_hal_perf2_service)
+binder_call(vendor_hal_perf_server, servicemanager)
+
 # Allow hwbinder call from hal client to server
 binder_call(vendor_hal_perf_client, vendor_hal_perf_server)
 
@@ -43,6 +47,7 @@ allow vendor_hal_perf_default proc:file rw_file_perms;
 allow vendor_hal_perf vendor_latency_device:chr_file rw_file_perms;
 get_prop(vendor_hal_perf, vendor_freq_prop)
 get_prop(vendor_hal_perf, vendor_mpctl_prop)
+get_prop(vendor_hal_perf, vendor_afp_prop)
 allow vendor_hal_perf_default vendor_mpctl_data_file:dir rw_dir_perms;
 allow vendor_hal_perf_default vendor_mpctl_data_file:file create_file_perms;
 allow vendor_hal_perf_default vendor_lm_data_file:dir rw_dir_perms;
@@ -128,7 +133,10 @@ hal_client_domain(vendor_hal_perf_default, vendor_hal_mem_pasrmanager);
 
 allow vendor_hal_perf_default block_device:dir { open read search };
 allow vendor_hal_perf_default proc_diskstats:file { getattr open read };
-
+allow vendor_hal_perf_default hal_graphics_composer_default:dir search;
+allow vendor_hal_perf_default hal_graphics_composer_default:file { open read };
+allow vendor_hal_perf_default surfaceflinger:dir search;
+allow vendor_hal_perf_default surfaceflinger:file { open read };
 allow vendor_hal_perf_default surfaceflinger:process setsched;
 allow vendor_hal_perf_default hal_graphics_composer_default:process setsched;
 allow vendor_hal_perf_default self:capability { sys_nice setuid };
